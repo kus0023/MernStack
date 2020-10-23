@@ -9,6 +9,5 @@ const options = {
 
 mongoose.connect(dbString, options, function (err) {
   if (err) console.log(err);
-
-  console.log("Connected to Database...");
+  else console.log("Connected to Database...");
 });

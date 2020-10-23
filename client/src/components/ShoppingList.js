@@ -5,10 +5,25 @@ import { CSSTransition, TransitionGroup } from "react-transition-group";
 import { connect } from "react-redux";
 import { deleteItem, getItems } from "../actions/ItemActions";
 
+import io from "socket.io-client";
+
 class ShoppingList extends Component {
-  componentDidMount() {
-    this.props.getItems();
+  constructor(props) {
+    super(props);
   }
+  componentDidMount() {
+    let that = this;
+    let socket = io("/");
+    socket.on("list-updated", function () {
+      that.props.getItems();
+    });
+  }
+
+  handleDelete = (id) => {
+    this.props.deleteItem(id);
+    let socket = io();
+    socket.emit("connect");
+  };
   render() {
     const { items } = this.props.itemData;
 
@@ -24,7 +39,7 @@ class ShoppingList extends Component {
                       className="remove-btn"
                       color="danger"
                       size="sm"
-                      onClick={() => this.props.deleteItem(_id)}
+                      onClick={() => this.handleDelete(_id)}
                     >
                       &times;{/*Delete button*/}
                     </Button>

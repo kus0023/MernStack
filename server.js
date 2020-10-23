@@ -27,4 +27,11 @@ if (process.env.NODE_ENV === "production") {
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => console.log("Server started at port: " + PORT));
+const server = app.listen(PORT, () =>
+  console.log("Server started at port: " + PORT)
+);
+
+let io = require("socket.io")(server);
+io.on("connect", function (socket) {
+  io.emit("list-updated");
+});

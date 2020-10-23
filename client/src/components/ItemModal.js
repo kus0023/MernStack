@@ -12,6 +12,7 @@ import {
 
 import { connect } from "react-redux";
 import { addItem } from "../actions/ItemActions";
+import io from "socket.io-client";
 
 import { PropTypes } from "prop-types";
 
@@ -44,6 +45,8 @@ class ItemModal extends Component {
 
     //add item via addItem action
     this.props.addItem(newItem);
+    let socket = io();
+    socket.emit("item-updated");
 
     //close model
     this.toggle();

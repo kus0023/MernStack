@@ -7,7 +7,7 @@ const User = require("../../models/User");
 const auth = require("../middleware/auth");
 
 //@route GET api/auth
-//@desc authenticate the user
+//@desc authenticate the user(Login)
 //@access Public
 router.post("/", (req, res) => {
   const { email, password } = req.body;
@@ -18,31 +18,37 @@ router.post("/", (req, res) => {
   }
 
   //check for existing user
-  User.findOne({ email }).then((user) => {
-    if (!user) return res.status(400).json({ msg: "user does not exist." });
+  User.findOne({ email })
+    .then((user) => {
+      if (!user) return res.status(400).json({ msg: "user does not exist." });
 
-    //validate password
-    bcrypt.compare(password, user.password).then((isMatch) => {
-      if (!isMatch) return res.status(400).json({ msg: "incorrect password." });
+      //validate password
+      bcrypt.compare(password, user.password).then((isMatch) => {
+        if (!isMatch)
+          return res.status(400).json({ msg: "incorrect password." });
 
-      jwt.sign(
-        { id: user.id },
-        process.env.JWTSECRETE,
-        { expiresIn: 3600 },
-        (err, token) => {
-          if (err) throw err;
-          res.json({
-            token,
-            user: {
-              id: user.id,
-              name: user.name,
-              email: user.email,
-            },
-          });
-        }
-      );
+        jwt.sign(
+          { id: user.id },
+          process.env.JWTSECRETE,
+          { expiresIn: 3600 },
+          (err, token) => {
+            if (err) throw err;
+            res.json({
+              token,
+              user: {
+                id: user.id,
+                name: user.name,
+                email: user.email,
+              },
+            });
+          }
+        );
+      });
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).json({ msg: "Server error! Please try again later." });
     });
-  });
 });
 
 //@route GET api/auth/user

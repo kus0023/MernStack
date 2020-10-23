@@ -92,9 +92,16 @@ export const login = ({ email, password }) => (dispatch) => {
       });
     })
     .catch((err) => {
-      dispatch(
-        returnErrors(err.response.data, err.response.status, "LOGIN_FAIL")
-      );
+      if (err.response) {
+        dispatch(
+          returnErrors(err.response.data, err.response.status, "LOGIN_FAIL")
+        );
+      } else {
+        dispatch(
+          returnErrors("Connection not extablished check your internet.", 400)
+        );
+      }
+
       dispatch({
         type: LOGIN_FAIL,
       });
